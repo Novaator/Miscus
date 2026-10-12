@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bonnier, Bonnier, Leee-etna! - Poliitikute Paikapanija</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;900&family=Bungee&family=Creepster&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --grass-green: #48bb78;
+      --sky-blue: #38bdf8;
+      --mound-dirt: #78350f;
+    }
+
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 42%, #4ade80 42%, #22c55e 72%, #15803d 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    .font-retro {
+      font-family: 'Bungee', cursive, sans-serif;
+    }
+
+    .font-bloody {
+      font-family: 'Creepster', cursive, sans-serif;
+    }
+
+    /* Badger-style cartoon clouds */
+    .cartoon-cloud {
+      background: #ffffff;
+      border-radius: 999px;
+      box-shadow: 4px 6px 0px rgba(0, 0, 0, 0.15);
+      position: absolute;
+    }
+
+    /* Hole container */
+    .hole-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      height: 100%;
+      min-height: 120px;
+    }
+
+    /* Mask that hides politicians completely when underground */
+    .mole-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 78%;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    /* Dirt mole burrow hole */
+    .dirt-burrow {
+      position: absolute;
+      bottom: 2px;
+      width: 94%;
+      height: 44%;
+      background: radial-gradient(ellipse at center, #170d06 0%, #3d1702 55%, #6d2f09 100%);
+      border: 4px solid #200d04;
+      border-radius: 50%;
+      box-shadow: inset 0 10px 18px rgba(0,0,0,0.9);
+      z-index: 5;
+    }
+
+    .burrow-front-lip {
+      position: absolute;
+      bottom: -6px;
+      width: 100%;
+      height: 38%;
+      background: #542306;
+      border: 4px solid #240e03;
+      border-radius: 0 0 50% 50% / 0 0 100% 100%;
+      z-index: 25;
+      box-shadow: 0 6px 0px rgba(0,0,0,0.35);
+    }
+
+    /* Politician actor with Badger bob */
+    .politician-actor {
+      transition: transform 0.15s cubic-bezier(0.2, 0.9, 0.35, 1.25), opacity 0.1s ease;
+      transform: translateY(140%);
+      opacity: 0;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+
+    .politician-actor.active {
+      transform: translateY(6%);
+      opacity: 1;
+      animation: badgerBob 0.38s infinite alternate ease-in-out;
+    }
+
+    @keyframes badgerBob {
+      0% { transform: translateY(6%) scale(1, 1); }
+      100% { transform: translateY(0%) scale(1.04, 0.96); }
+    }
+
+    .politician-actor.hit {
+      opacity: 1;
+      animation: politicianSmack 0.3s ease-out forwards;
+      filter: brightness(1.3) contrast(1.2) hue-rotate(-20deg);
+    }
+
+    @keyframes politicianSmack {
+      0% { transform: translateY(6%) rotate(0deg) scale(1.15, 0.85); }
+      35% { transform: translateY(18%) rotate(-25deg) scale(0.9, 1.1); }
+      70% { transform: translateY(45%) rotate(20deg) scale(0.8, 0.8); }
+      100% { transform: translateY(125%) rotate(40deg) scale(0.5); }
+    }
+
+    /* Journalist Mallet Cursor */
+    #journalist-hammer {
+      pointer-events: none;
+      position: fixed;
+      width: 130px;
+      height: 130px;
+      z-index: 100;
+      transform: translate(-30%, -30%) rotate(0deg);
+      transform-origin: 75% 85%;
+      will-change: transform, left, top;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.35));
+    }
+
+    #journalist-hammer.strike {
+      animation: hammerWhack 0.15s ease-in-out;
+    }
+
+    @keyframes hammerWhack {
+      0% { transform: translate(-30%, -30%) rotate(0deg) scale(1); }
+      40% { transform: translate(-35%, -15%) rotate(-48deg) scale(1.25); }
+      100% { transform: translate(-30%, -30%) rotate(0deg) scale(1); }
+    }
+
+    /* Autonomous Hindre actor */
+    #hindre-hunter {
+      pointer-events: none;
+      position: fixed;
+      width: 135px;
+      height: 135px;
+      z-index: 90;
+      transform: translate(-50%, -50%);
+      will-change: transform, left, top;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.5));
+      transition: left 0.12s linear, top 0.12s linear;
+    }
+
+    #hindre-hunter.whacking {
+      animation: hindreSmash 0.18s ease-in-out;
+    }
+
+    @keyframes hindreSmash {
+      0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+      50% { transform: translate(-50%, -40%) rotate(-40deg) scale(1.3); }
+      100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+    }
+
+    /* Comic Floater Text */
+    .hit-floater {
+      position: absolute;
+      pointer-events: none;
+      animation: popBurst 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+      font-weight: 900;
+      z-index: 60;
+      text-stroke: 2px #000;
+      -webkit-text-stroke: 2px #000;
+    }
+
+    @keyframes popBurst {
+      0% { opacity: 0; transform: translate(-50%, 0) scale(0.3) rotate(-15deg); }
+      20% { opacity: 1; transform: translate(-50%, -15px) scale(1.3) rotate(8deg); }
+      70% { opacity: 1; transform: translate(-50%, -35px) scale(1.1) rotate(-4deg); }
+      100% { opacity: 0; transform: translate(-50%, -65px) scale(0.7) rotate(10deg); }
+    }
+
+    /* Speech bubbles */
+    .badger-quote {
+      position: absolute;
+      top: -16px;
+      background: #fef08a;
+      border: 3px solid #000;
+      box-shadow: 3px 4px 0px #000;
+      color: #000;
+      border-radius: 14px;
+      font-weight: 900;
+      padding: 3px 8px;
+      font-size: 11px;
+      line-height: 1.2;
+      z-index: 35;
+      white-space: nowrap;
+      pointer-events: none;
+      animation: wobbleTag 0.5s infinite alternate ease-in-out;
+    }
+    
+    @keyframes wobbleTag {
+      0% { transform: rotate(-2deg); }
+      100% { transform: rotate(3deg); }
+    }
+
+    /* Smoke overlay effect when cigarette is active */
+    .smoke-haze {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, rgba(160, 160, 160, 0.25) 0%, rgba(70, 70, 70, 0.5) 100%);
+      mix-blend-mode: multiply;
+      z-index: 40;
+      animation: smokePulse 3s infinite alternate ease-in-out;
+    }
+
+    @keyframes smokePulse {
+      0% { opacity: 0.6; }
+      100% { opacity: 0.95; }
+    }
+
+    /* Coffee visual speed aura */
+    .coffee-aura {
+      box-shadow: inset 0 0 45px rgba(234, 88, 12, 0.6);
+      border-color: #ea580c !important;
+    }
+
+    /* Bloody Game Over */
+    .blood-drip {
+      text-shadow: 0 0 10px #7f1d1d, 3px 4px 0 #000;
+      animation: dripWobble 0.7s infinite alternate ease-in-out;
+    }
+
+    @keyframes dripWobble {
+      0% { transform: scale(1) rotate(-1deg); }
+      100% { transform: scale(1.03) rotate(1deg); }
+    }
+
+    /* Ticker */
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-badger-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 18s linear infinite;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden select-none cursor-default md:cursor-none">
+
+  <!-- Background decorative clouds -->
+  <div class="cartoon-cloud w-32 h-10 top-4 left-6 hidden sm:block opacity-90 border-2 border-sky-400"></div>
+  <div class="cartoon-cloud w-44 h-12 top-10 right-12 hidden sm:block opacity-90 border-2 border-sky-400"></div>
+  <div class="cartoon-cloud w-28 h-8 top-20 left-1/3 hidden sm:block opacity-80 border-2 border-sky-400"></div>
+
+  <!-- Cigarette smoke overlay element -->
+  <div id="smoke-overlay" class="smoke-haze hidden"></div>
+
+  <!-- Journalist Follower (Whack mallet) with speech bubble -->
+  <div id="journalist-hammer" class="hidden md:block">
+    <div class="relative w-full h-full">
+      <img 
+        src="https://novaator.github.io/Miscus/Merilin.png" 
+        alt="Merilin" 
+        class="w-full h-full object-contain filter drop-shadow-lg"
+        onerror="this.src='https://placehold.co/130x130/f59e0b/000000?text=Merilin'"
+      />
+      <div class="absolute bottom-2 -left-3 bg-yellow-400 border-2 border-black rounded-full px-2 py-0.5 text-[10px] font-black text-black shadow-[2px_2px_0px_#000] uppercase tracking-wide flex items-center gap-1 whitespace-nowrap">
+        <span>🎙️</span> "Ärge valetage, palun!"
+      </div>
+    </div>
+  </div>
+
+  <!-- Hindre Autonomous Hunter Actor with specified quote bubble -->
+  <div id="hindre-hunter" class="hidden">
+    <div class="relative w-full h-full">
+      <img 
+        src="https://novaator.github.io/Miscus/hindre.png" 
+        alt="Hindre" 
+        class="w-full h-full object-contain filter drop-shadow-xl"
+        onerror="this.src='https://placehold.co/130x130/ef4444/ffffff?text=Hindre'"
+      />
+      <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white border-2 border-black rounded-lg px-2.5 py-0.5 text-[10px] font-black whitespace-nowrap shadow-[2px_2px_0px_#000] animate-bounce">
+        "Kuidas nüüd sellega oli?" 🎙️
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Scoreboard -->
+  <header class="w-full max-w-5xl mx-auto px-4 pt-3 sm:pt-4 z-30">
+    <div class="bg-yellow-300 border-4 border-black rounded-3xl p-3 sm:p-4 shadow-[6px_6px_0px_#000]">
+      
+      <!-- Top Title and Info -->
+      <div class="flex items-center justify-between border-b-4 border-black pb-2 sm:pb-3 flex-wrap gap-2">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl sm:text-3xl">🕳️</span>
+          <h1 class="text-base sm:text-2xl md:text-3xl font-black font-retro tracking-wide text-black drop-shadow-[2px_2px_0px_#ffffff]">
+            BONNIER, BONNIER, LEEE-ETNA!
+          </h1>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-4">
+          <div class="bg-amber-100 border-2 border-black px-2.5 py-1 rounded-xl text-black font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000]">
+            TASE: <span id="level-display" class="text-amber-800 font-retro">1</span>
+          </div>
+          <button id="sound-toggle-btn" class="bg-white hover:bg-yellow-100 border-2 border-black text-black font-black text-xs sm:text-sm px-3 py-1 rounded-xl shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-transform flex items-center gap-1 cursor-pointer">
+            <span id="sound-icon">🔊</span> <span id="sound-status">HELI: SEES</span>
+          </button>
+          <div class="hidden sm:block bg-green-400 border-2 border-black px-3 py-1 rounded-xl text-black font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000]">
+            REKORD: <span id="high-score-display">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-4 gap-2 pt-2 sm:pt-3 text-center">
+        <!-- Score -->
+        <div class="bg-white border-3 sm:border-4 border-black rounded-2xl p-1.5 sm:p-2 shadow-[3px_3px_0px_#000]">
+          <div class="text-[9px] sm:text-xs font-black uppercase text-amber-700">Paika pandud!</div>
+          <div id="score-display" class="text-xl sm:text-3xl font-black font-retro text-black">0</div>
+        </div>
+
+        <!-- Timer -->
+        <div class="bg-white border-3 sm:border-4 border-black rounded-2xl p-1.5 sm:p-2 shadow-[3px_3px_0px_#000]">
+          <div class="text-[9px] sm:text-xs font-black uppercase text-red-600">Eetri-aeg</div>
+          <div id="time-display" class="text-xl sm:text-3xl font-black font-retro text-red-600">30s</div>
+        </div>
+
+        <!-- Combo -->
+        <div class="bg-white border-3 sm:border-4 border-black rounded-2xl p-1.5 sm:p-2 shadow-[3px_3px_0px_#000]">
+          <div class="text-[9px] sm:text-xs font-black uppercase text-green-700">Rütm / Kombo</div>
+          <div id="combo-display" class="text-xl sm:text-3xl font-black font-retro text-green-600">1.0x</div>
+        </div>
+
+        <!-- Active modifier status -->
+        <div class="bg-white border-3 sm:border-4 border-black rounded-2xl p-1.5 sm:p-2 shadow-[3px_3px_0px_#000]">
+          <div class="text-[9px] sm:text-xs font-black uppercase text-blue-700">Boonus</div>
+          <div id="buff-display" class="text-xs sm:text-sm md:text-base font-black font-retro text-blue-600 truncate pt-1">TAVALINE</div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="w-full max-w-5xl mx-auto px-4 py-3 sm:py-5 flex-grow flex flex-col md:flex-row items-center justify-center gap-4 relative z-20">
+    
+    <!-- 3x3 Playing Field with 9 Politicians -->
+    <div id="grid-container" class="grid grid-cols-3 gap-3 sm:gap-5 w-full max-w-lg aspect-square bg-green-500/30 p-3 sm:p-4 rounded-3xl border-4 border-black/50 shadow-inner">
+      
+      <!-- Hole 0: VARRO -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"Liberaalne hullumeelsus!"</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polvarro.png" 
+            alt="Varro" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="0"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Varro'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 1: JÜRGEN -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"Ärge segage vahele!"</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polligi.png" 
+            alt="Jürgen" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="1"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=J%C3%BCrgen'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 2: KRISTEN -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"Keskendume praegu olulisele."</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polmichal.png" 
+            alt="Kristen" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="2"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Kristen'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 3: KRISTINA -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"Usaldame oma eksperte."</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polkristina.png" 
+            alt="Kristina" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="3"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Kristina'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 4: URMAS -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"See on riigireetmine!"</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polurmas.png" 
+            alt="Urmas" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="4"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Urmas'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 5: MIHHAIL -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"See on protsess."</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polk6lvart.png" 
+            alt="Mihhail" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="5"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Mihhail'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 6: LAVLY -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"Lõpetame selle sotsialismi!"</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polperling.png" 
+            alt="Lavly" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="6"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Lavly'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 7: LAURI -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"Rikkad peavad panustama."</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/poll22nemets.png" 
+            alt="Lauri" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="7"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Lauri'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+      <!-- Hole 8: MARTIN -->
+      <div class="hole-container">
+        <div class="badger-quote hidden">"Peavoolumeedia lihtsalt valetab."</div>
+        <div class="dirt-burrow"></div>
+        <div class="mole-mask">
+          <img 
+            src="https://novaator.github.io/Miscus/polhelme.png" 
+            alt="Martin" 
+            class="politician-actor w-24 sm:w-28 md:w-32 object-contain pointer-events-auto cursor-pointer"
+            data-index="8"
+            onerror="this.src='https://placehold.co/130x130/3b82f6/ffffff?text=Martin'"
+          />
+        </div>
+        <div class="burrow-front-lip"></div>
+      </div>
+
+    </div>
+
+    <aside class="w-full md:w-64 flex flex-col gap-3">
+      
+      <div class="bg-amber-300 border-4 border-black rounded-2xl p-3 shadow-[5px_5px_0px_#000]">
+        <div class="text-xs font-black font-retro uppercase text-black mb-2 flex items-center gap-1">
+          <span>⚡</span> TOIMETUSE ABIVÄGI:
+        </div>
+
+        <!-- 1) TÕMBAN SIGARETI (-100p) -->
+        <button id="btn-cigar" class="w-full mb-2 bg-stone-100 hover:bg-stone-200 border-3 border-black rounded-xl p-2.5 text-left font-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all relative overflow-hidden group cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-retro flex items-center gap-1 text-stone-900">
+              🚬 TÕMBAN SIGARETI
+            </span>
+            <span id="cigar-charges" class="text-xs bg-black text-yellow-300 px-1.5 py-0.5 rounded font-bold">3/3</span>
+          </div>
+          <p class="text-[10px] text-stone-700 font-bold mt-1 leading-tight">
+            Suitsupaus! 2x rahu (-100 p)
+          </p>
+          <div id="cigar-timer-bar" class="absolute bottom-0 left-0 h-1.5 bg-amber-600 w-0 transition-all"></div>
+        </button>
+
+        <!-- 2) JOON KOHVI -->
+        <button id="btn-coffee" class="w-full mb-2 bg-amber-500 hover:bg-amber-400 border-3 border-black rounded-xl p-2.5 text-left font-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all relative overflow-hidden text-black cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-retro flex items-center gap-1">
+              ☕ JOON KOHVI
+            </span>
+            <span id="coffee-status" class="text-xs bg-black text-amber-300 px-1.5 py-0.5 rounded font-bold">VALMIS</span>
+          </div>
+          <p class="text-[10px] text-stone-900 font-bold mt-1 leading-tight">
+            Worky-worky! Kiirus+1, 3x tööd
+          </p>
+          <div id="coffee-timer-bar" class="absolute bottom-0 left-0 h-1.5 bg-yellow-300 w-0 transition-all"></div>
+        </button>
+
+        <!-- 3) SAADAN HINDRE PEALE (Single-use with Red Cross overlay) -->
+        <button id="btn-hindre" class="w-full bg-red-500 hover:bg-red-400 border-3 border-black rounded-xl p-2.5 text-left font-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all relative overflow-hidden text-white cursor-pointer">
+          <!-- Red Cross overlay when used -->
+          <div id="hindre-used-cross" class="hidden absolute inset-0 bg-black/60 z-30 flex items-center justify-center pointer-events-none">
+            <span class="text-red-500 text-5xl font-black drop-shadow-[0_2px_4px_#000] select-none">❌</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-retro flex items-center gap-1">
+              🎙️ SAADA HINDRE
+            </span>
+            <span id="hindre-status" class="text-xs bg-black text-white px-1.5 py-0.5 rounded font-bold">1/1</span>
+          </div>
+          <p class="text-[10px] text-stone-100 font-bold mt-1 leading-tight">
+            Madis päästab päeva
+          </p>
+          <div id="hindre-timer-bar" class="absolute bottom-0 left-0 h-1.5 bg-yellow-300 w-0 transition-all"></div>
+        </button>
+
+      </div>
+
+      <!-- Quick speed & difficulty indicator -->
+      <div class="bg-white border-3 border-black rounded-2xl p-2.5 shadow-[3px_3px_0px_#000] text-center">
+        <div class="text-[10px] font-black uppercase text-stone-600">Kiirusaste (iga +100 p):</div>
+        <div id="speed-meter" class="text-sm font-black font-retro text-amber-600 mt-0.5">Tase 1 (1350ms)</div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Badger Badger Mushroom Style Chanting Ticker -->
+  <footer class="w-full bg-yellow-400 text-black font-black py-2 overflow-hidden border-t-4 border-black relative z-30 shadow-[0_-4px_0px_rgba(0,0,0,0.2)]">
+    <div class="flex items-center">
+      <div class="bg-black text-yellow-300 px-3 py-0.5 font-retro text-xs z-10 uppercase tracking-widest mr-2">
+        RÜTM:
+      </div>
+      <div class="overflow-hidden flex-1 relative">
+        <div class="animate-badger-marquee text-xs sm:text-sm font-black tracking-wider uppercase">
+          🦡 BONNIER, BONNIER, BONNIER! • 🍄 LEEE-ETNA! LEEE-ETNA! • 🎙️ KUIDAS NÜÜD SELLEGA OLI? • ☕ WORKY-WORKY! • 🚬 SUITSUPAUS! • 🦡 POLIITIK, POLIITIK, POLIITIK!
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="game-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-yellow-300 border-4 border-black max-w-md w-full rounded-3xl p-6 sm:p-8 text-center shadow-[10px_10px_0px_#000] relative">
+      
+      <div class="w-24 h-24 mx-auto -mt-12 mb-3 rounded-full border-4 border-black bg-sky-200 overflow-hidden shadow-[4px_4px_0px_#000]">
+        <img 
+          src="https://novaator.github.io/Miscus/Merilin.png" 
+          alt="Merilin" 
+          class="w-full h-full object-cover"
+          onerror="this.src='https://placehold.co/120x120/f59e0b/000000?text=Merilin'"
+        />
+      </div>
+
+      <h2 id="modal-title" class="text-xl sm:text-2xl font-black font-retro text-black mb-1 drop-shadow-[2px_2px_0px_#ffffff]">
+        BONNIER, BONNIER, LEEE-ETNA!
+      </h2>
+
+      <p id="modal-desc" class="text-black font-bold text-xs sm:text-sm mb-4 leading-snug">
+        Iga 100 punktiga tõuseb tempo! Kasuta paremalt erioskusi (Sigaret, Kohv, Hindre), et poliitikuid faktidega rappida!
+      </p>
+
+      <div id="modal-stats" class="hidden mb-4 bg-white rounded-2xl p-3 border-3 border-black shadow-[4px_4px_0px_#000]">
+        <div class="grid grid-cols-2 gap-2 text-center">
+          <div>
+            <div class="text-[10px] text-stone-600 font-black uppercase">Tulemus</div>
+            <div id="final-score" class="text-2xl sm:text-3xl font-black font-retro text-black">0</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-stone-600 font-black uppercase">Tiitel</div>
+            <div id="final-rating" class="text-sm font-black text-green-700 mt-1">Preili Bonnier!</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="start-btn" class="w-full py-3.5 px-6 bg-green-500 hover:bg-green-400 border-4 border-black text-black font-black font-retro text-base tracking-wider rounded-2xl shadow-[5px_5px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer">
+        ALUSTA OTSE-EETRIT! 🎙️
+      </button>
+
+      <p class="text-black font-bold text-[11px] mt-3">
+        Klõpsa või koputa poliitikutele • Kiired tabamused kasvatavad kombo!
+      </p>
+    </div>
+  </div>
+
+  <!-- Bloody Lung Cancer Game Over Screen -->
+  <div id="cancer-modal" class="fixed inset-0 bg-red-950/95 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-black border-4 border-red-700 max-w-lg w-full rounded-3xl p-6 sm:p-8 text-center shadow-[0_0_50px_rgba(220,38,38,0.8)] relative text-white">
+      
+      <div class="text-5xl sm:text-6xl mb-2 animate-bounce">🫁 🚬 ☠️</div>
+
+      <h2 class="text-3xl sm:text-5xl font-black font-bloody text-red-600 mb-2 blood-drip uppercase tracking-widest">
+        Tubli! Said kopsuvähi!
+      </h2>
+
+      <p class="text-red-200 font-bold text-sm sm:text-base mb-6 leading-relaxed">
+        Tõmbasid sigareti vähem kui 15 sekundi pärast eelmist! Terviseamet hoiatas: suitsetamine kahjustab rängalt toimetuse tervist ja eetri-aeg sai enneaegselt läbi.
+      </p>
+
+      <div class="mb-6 bg-red-900/60 rounded-2xl p-4 border-2 border-red-600">
+        <div class="text-xs uppercase text-red-300 font-bold">Saavutatud punktid enne kopsuvähki:</div>
+        <div id="cancer-score" class="text-3xl font-black font-retro text-yellow-300 mt-1">0</div>
+      </div>
+
+      <button id="cancer-restart-btn" class="w-full py-4 px-6 bg-red-600 hover:bg-red-500 border-4 border-black text-white font-black font-retro text-base tracking-wider rounded-2xl shadow-[5px_5px_0px_#7f1d1d] active:translate-x-1 active:translate-y-1 transition-all cursor-pointer">
+        ALUSTA TERVENA UUESTI! 🔄
+      </button>
+    </div>
+  </div>
+
+  <script>
+    class RetroAudio {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.hindreAudio = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        if (!this.hindreAudio) {
+          this.hindreAudio = new Audio('https://novaator.github.io/Miscus/71_ID117_459071.mp3');
+          this.hindreAudio.preload = 'auto';
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+      }
+
+      playPop() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(240, t);
+          osc.frequency.exponentialRampToValueAtTime(540, t + 0.08);
+
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(t);
+          osc.stop(t + 0.08);
+        } catch(e) {}
+      }
+
+      playWhack() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(400, t);
+          osc.frequency.exponentialRampToValueAtTime(70, t + 0.14);
+
+          gain.gain.setValueAtTime(0.35, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.14);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(t);
+          osc.stop(t + 0.14);
+        } catch(e) {}
+      }
+
+      playCoffee() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(300, t);
+          osc.frequency.exponentialRampToValueAtTime(900, t + 0.2);
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.2);
+        } catch(e) {}
+      }
+
+      playCough() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(140, t);
+          osc.frequency.setValueAtTime(110, t + 0.1);
+          osc.frequency.setValueAtTime(80, t + 0.2);
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.35);
+        } catch(e) {}
+      }
+
+      playCancerDeath() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(250, t);
+          osc.frequency.exponentialRampToValueAtTime(35, t + 0.8);
+          gain.gain.setValueAtTime(0.4, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.8);
+        } catch(e) {}
+      }
+
+      playEnd() {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(320, t);
+          osc.frequency.setValueAtTime(260, t + 0.12);
+          osc.frequency.setValueAtTime(180, t + 0.24);
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.45);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.45);
+        } catch(e) {}
+      }
+
+      // Play Hindre entrance audio track with speech fallback
+      playHindreEntrance() {
+        if (!this.enabled) return;
+        try {
+          if (!this.hindreAudio) {
+            this.hindreAudio = new Audio('https://novaator.github.io/Miscus/71_ID117_459071.mp3');
+          }
+          this.hindreAudio.currentTime = 0;
+          const playPromise = this.hindreAudio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              this.speakHindreFallback();
+            });
+          }
+        } catch(e) {
+          this.speakHindreFallback();
+        }
+      }
+
+      speakHindreFallback() {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const msg = new SpeechSynthesisUtterance("Kuidas nüüd sellega oli?");
+          msg.lang = 'et-EE';
+          msg.rate = 1.05;
+          window.speechSynthesis.speak(msg);
+        } else {
+          this.playCoffee();
+        }
+      }
+    }
+
+    const audio = new RetroAudio();
+
+    const politiciansData = [
+      {
+        name: "Varro",
+        img: "https://novaator.github.io/Miscus/polvarro.png",
+        quotes: [
+          "Liberaalne hullumeelsus!",
+          "Lugege palun põhiseadust!",
+          "Puhas ideoloogiline diktatuur."
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Jürgen",
+        img: "https://novaator.github.io/Miscus/polligi.png",
+        quotes: [
+          "Ärge segage vahele!",
+          "Matemaatika ei valeta.",
+          "Lõpetage see demagoogia!"
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Kristen",
+        img: "https://novaator.github.io/Miscus/polmichal.png",
+        quotes: [
+          "Keskendume praegu olulisele.",
+          "Eesti liigub edasi.",
+          "Valitsus töötab ühtselt."
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Kristina",
+        img: "https://novaator.github.io/Miscus/polkristina.png",
+        quotes: [
+          "Usaldame oma eksperte.",
+          "Pikk plaan puudub.",
+          "Personaalne riik lahendab."
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Urmas",
+        img: "https://novaator.github.io/Miscus/polurmas.png",
+        quotes: [
+          "See on riigireetmine!",
+          "Täielik poliitiline absurd!",
+          "Valitsus tegeleb lammutamisega."
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Mihhail",
+        img: "https://novaator.github.io/Miscus/polk6lvart.png",
+        quotes: [
+          "See on protsess.",
+          "Ootame ära auditi.",
+          "Analüüsime olukorda põhjalikult."
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Lavly",
+        img: "https://novaator.github.io/Miscus/polperling.png",
+        quotes: [
+          "Lõpetame selle sotsialismi!",
+          "Riik on paks.",
+          "Bürokraatiat tuleb vähendada."
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Lauri",
+        img: "https://novaator.github.io/Miscus/poll22nemets.png",
+        quotes: [
+          "Rikkad peavad panustama.",
+          "Vajame suuremat solidaarsust.",
+          "Tööinimest tuleb kaitsta."
+        ],
+        quoteIndex: 0
+      },
+      {
+        name: "Martin",
+        img: "https://novaator.github.io/Miscus/polhelme.png",
+        quotes: [
+          "Peavoolumeedia lihtsalt valetab.",
+          "See on riigipööre!",
+          "Süvariik tegutseb jälle."
+        ],
+        quoteIndex: 0
+      }
+    ];
+
+    const journalistWhacks = [
+      "PAIKA! 💥",
+      "FAKTIKONTROLL! 🎙️",
+      "VASTA ASJALE! 🎯",
+      "DOKUMENDID! 📑",
+      "ÄRA PÕIKLE! ⚡",
+      "VALE JUTT! ❌"
+    ];
+
+    // Core Game State
+    let score = 0;
+    let highScore = parseInt(localStorage.getItem('whack_politician_bonnier_highscore') || '0', 10);
+    let timeLeft = 30;
+    let gameInterval = null;
+    let spawnTimeout = null;
+    let hideMoleTimeout = null;
+    let isPlaying = false;
+    let combo = 1.0;
+    let lastHitTime = 0;
+    let activeActorIndex = null;
+
+    // Power-up States
+    let cigarCharges = 3;
+    let lastCigarTimestamp = 0;
+    let cigarActiveUntil = 0;
+    let cigarInterval = null;
+
+    let coffeeActiveUntil = 0;
+    let coffeeInterval = null;
+
+    let hindreUsed = false; // Hindre can be used only 1 time per game
+    let hindreActiveUntil = 0;
+    let hindreInterval = null;
+    let hindreAIInterval = null;
+
+    // Mouse Tracking for Journalist Mallet
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    // DOM Elements
+    const actors = document.querySelectorAll('.politician-actor');
+    const quotes = document.querySelectorAll('.badger-quote');
+    const hammer = document.getElementById('journalist-hammer');
+    const hindreHunter = document.getElementById('hindre-hunter');
+    const smokeOverlay = document.getElementById('smoke-overlay');
+    const gridContainer = document.getElementById('grid-container');
+
+    const scoreDisplay = document.getElementById('score-display');
+    const timeDisplay = document.getElementById('time-display');
+    const comboDisplay = document.getElementById('combo-display');
+    const levelDisplay = document.getElementById('level-display');
+    const buffDisplay = document.getElementById('buff-display');
+    const speedMeter = document.getElementById('speed-meter');
+    const highScoreDisplay = document.getElementById('high-score-display');
+
+    // Modals
+    const modal = document.getElementById('game-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalStats = document.getElementById('modal-stats');
+    const finalScore = document.getElementById('final-score');
+    const finalRating = document.getElementById('final-rating');
+    const startBtn = document.getElementById('start-btn');
+
+    const cancerModal = document.getElementById('cancer-modal');
+    const cancerScore = document.getElementById('cancer-score');
+    const cancerRestartBtn = document.getElementById('cancer-restart-btn');
+
+    // Buttons & overlays
+    const soundToggleBtn = document.getElementById('sound-toggle-btn');
+    const soundStatus = document.getElementById('sound-status');
+    const soundIcon = document.getElementById('sound-icon');
+    const btnCigar = document.getElementById('btn-cigar');
+    const btnCoffee = document.getElementById('btn-coffee');
+    const btnHindre = document.getElementById('btn-hindre');
+    const hindreUsedCross = document.getElementById('hindre-used-cross');
+    const cigarChargesSpan = document.getElementById('cigar-charges');
+    const coffeeStatusSpan = document.getElementById('coffee-status');
+    const hindreStatusSpan = document.getElementById('hindre-status');
+
+    highScoreDisplay.textContent = highScore;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      hammer.style.left = `${mouseX}px`;
+      hammer.style.top = `${mouseY}px`;
+    });
+
+    function triggerHammerWhack(x, y) {
+      hammer.classList.remove('strike');
+      void hammer.offsetWidth;
+      hammer.classList.add('strike');
+
+      if (window.innerWidth < 768 && x !== undefined && y !== undefined) {
+        hammer.style.left = `${x}px`;
+        hammer.style.top = `${y}px`;
+        hammer.classList.remove('hidden');
+        setTimeout(() => hammer.classList.add('hidden'), 220);
+      }
+    }
+
+    window.addEventListener('mousedown', (e) => {
+      triggerHammerWhack(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        mouseX = touch.clientX;
+        mouseY = touch.clientY;
+        triggerHammerWhack(mouseX, mouseY);
+      }
+    }, { passive: true });
+
+    function getCurrentLevel() {
+      // Level starts at 1 and increases every 100 points
+      let lvl = 1 + Math.floor(score / 100);
+      // If coffee is active, increase level by 1
+      if (Date.now() < coffeeActiveUntil) {
+        lvl += 1;
+      }
+      return lvl;
+    }
+
+    function getMoleVisibleDuration() {
+      const lvl = getCurrentLevel();
+      let dur = Math.max(420, 1350 - (lvl - 1) * 110);
+      if (Date.now() < cigarActiveUntil) {
+        dur *= 2;
+      }
+      return dur;
+    }
+
+    function getNextSpawnDelay() {
+      const lvl = getCurrentLevel();
+      return Math.max(160, 480 - (lvl - 1) * 35);
+    }
+
+    function updateDifficultyUI() {
+      const lvl = getCurrentLevel();
+      levelDisplay.textContent = lvl;
+      const dur = Math.round(getMoleVisibleDuration());
+      speedMeter.textContent = `Tase ${lvl} (${dur}ms)`;
+
+      const isCigar = Date.now() < cigarActiveUntil;
+      const isCoffee = Date.now() < coffeeActiveUntil;
+      const isHindre = Date.now() < hindreActiveUntil;
+
+      if (isCoffee && isCigar) {
+        buffDisplay.textContent = "KOHV + SUITS (3x)";
+      } else if (isCoffee) {
+        buffDisplay.textContent = "KOHV (3x Pkt)";
+      } else if (isCigar) {
+        buffDisplay.textContent = "SUITS (2x Aeglane)";
+      } else if (isHindre) {
+        buffDisplay.textContent = "HINDRE JAHIL";
+      } else {
+        buffDisplay.textContent = "TAVALINE";
+      }
+    }
+
+    function getRandomHole(excludeIndex) {
+      let nextIndex;
+      do {
+        nextIndex = Math.floor(Math.random() * actors.length);
+      } while (nextIndex === excludeIndex && actors.length > 1);
+      return nextIndex;
+    }
+
+    function popMole() {
+      if (!isPlaying) return;
+
+      const idx = getRandomHole(activeActorIndex);
+      activeActorIndex = idx;
+      const mole = actors[idx];
+      const quote = quotes[idx];
+      const pol = politiciansData[idx];
+
+      mole.classList.remove('hit');
+      mole.src = pol.img;
+      mole.classList.add('active');
+
+      // Cycle quotes sequentially through the 3 phrases
+      const currentQuote = pol.quotes[pol.quoteIndex % pol.quotes.length];
+      pol.quoteIndex = (pol.quoteIndex + 1) % pol.quotes.length;
+
+      quote.textContent = `"${currentQuote}"`;
+      quote.classList.remove('hidden');
+
+      audio.playPop();
+
+      const visibleTime = getMoleVisibleDuration();
+      updateDifficultyUI();
+
+      hideMoleTimeout = setTimeout(() => {
+        mole.classList.remove('active');
+        quote.classList.add('hidden');
+        activeActorIndex = null;
+
+        if (isPlaying) {
+          spawnTimeout = setTimeout(popMole, getNextSpawnDelay());
+        }
+      }, visibleTime);
+    }
+
+    function createHitFloater(x, y, text, extraClass = '') {
+      const floater = document.createElement('div');
+      floater.className = `hit-floater text-yellow-300 font-retro text-xs sm:text-sm ${extraClass}`;
+      floater.style.left = `${x}px`;
+      floater.style.top = `${y}px`;
+      floater.textContent = text;
+      document.body.appendChild(floater);
+
+      setTimeout(() => {
+        if (floater.parentNode) floater.parentNode.removeChild(floater);
+      }, 700);
+    }
+
+    function hitPolitician(mole, byHindre = false) {
+      if (!isPlaying) return;
+      if (!mole.classList.contains('active') || mole.classList.contains('hit')) return;
+
+      mole.classList.remove('active');
+      mole.classList.add('hit');
+      clearTimeout(hideMoleTimeout);
+
+      const quote = quotes[mole.dataset.index];
+      quote.classList.add('hidden');
+
+      // Combo rhythmic multiplier
+      const now = Date.now();
+      if (now - lastHitTime < 1300) {
+        combo = Math.min(combo + 0.5, 4.0);
+      } else {
+        combo = 1.0;
+      }
+      lastHitTime = now;
+
+      // Base points
+      let points = Math.round(10 * combo);
+
+      // Coffee 3x multiplier
+      if (Date.now() < coffeeActiveUntil) {
+        points *= 3;
+      }
+
+      score += points;
+      scoreDisplay.textContent = score;
+      comboDisplay.textContent = `${combo.toFixed(1)}x`;
+
+      audio.playWhack();
+
+      const rect = mole.getBoundingClientRect();
+      const hitX = rect.left + rect.width / 2;
+      const hitY = rect.top + 10;
+
+      if (byHindre) {
+        createHitFloater(hitX, hitY, `+${points} HINDRE: "KUIDAS OLI?!" 💥`, 'text-red-400');
+      } else {
+        const randomWhack = journalistWhacks[Math.floor(Math.random() * journalistWhacks.length)];
+        createHitFloater(hitX, hitY, `+${points} ${randomWhack}`);
+      }
+
+      updateDifficultyUI();
+      spawnTimeout = setTimeout(popMole, 180);
+    }
+
+    actors.forEach((mole) => {
+      mole.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        hitPolitician(mole, false);
+      });
+    });
+
+    btnCigar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isPlaying) return;
+
+      const now = Date.now();
+
+      // Check lung cancer spam condition (< 15 seconds from last smoke)
+      if (lastCigarTimestamp > 0 && (now - lastCigarTimestamp) < 15000) {
+        triggerLungCancerDeath();
+        return;
+      }
+
+      if (cigarCharges <= 0) {
+        createHitFloater(btnCigar.getBoundingClientRect().left + 80, btnCigar.getBoundingClientRect().top, "SIGARETID OTSAS! ❌", 'text-stone-300');
+        return;
+      }
+
+      cigarCharges--;
+      lastCigarTimestamp = now;
+      cigarActiveUntil = now + 10000;
+      cigarChargesSpan.textContent = `${cigarCharges}/3`;
+
+      // Deduct 100 points
+      score = Math.max(0, score - 100);
+      scoreDisplay.textContent = score;
+
+      audio.playCough();
+      smokeOverlay.classList.remove('hidden');
+
+      const bar = document.getElementById('cigar-timer-bar');
+      bar.style.width = '100%';
+
+      clearInterval(cigarInterval);
+      cigarInterval = setInterval(() => {
+        const rem = cigarActiveUntil - Date.now();
+        if (rem <= 0) {
+          clearInterval(cigarInterval);
+          smokeOverlay.classList.add('hidden');
+          bar.style.width = '0%';
+          updateDifficultyUI();
+        } else {
+          bar.style.width = `${(rem / 10000) * 100}%`;
+          updateDifficultyUI();
+        }
+      }, 100);
+
+      createHitFloater(window.innerWidth / 2, window.innerHeight / 2, "-100p! SUITSUPAUS! 2x RAHU", 'text-red-400');
+      updateDifficultyUI();
+    });
+
+    function triggerLungCancerDeath() {
+      isPlaying = false;
+      clearInterval(gameInterval);
+      clearTimeout(spawnTimeout);
+      clearTimeout(hideMoleTimeout);
+      clearInterval(cigarInterval);
+      clearInterval(coffeeInterval);
+      clearInterval(hindreInterval);
+      clearInterval(hindreAIInterval);
+
+      audio.playCancerDeath();
+      smokeOverlay.classList.remove('hidden');
+      cancerScore.textContent = score;
+      cancerModal.classList.remove('hidden');
+    }
+
+    cancerRestartBtn.addEventListener('click', () => {
+      cancerModal.classList.add('hidden');
+      smokeOverlay.classList.add('hidden');
+      startGame();
+    });
+
+    btnCoffee.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isPlaying) return;
+
+      const now = Date.now();
+      coffeeActiveUntil = now + 10000;
+      audio.playCoffee();
+      gridContainer.classList.add('coffee-aura');
+      coffeeStatusSpan.textContent = "10s 3X!";
+
+      const bar = document.getElementById('coffee-timer-bar');
+      bar.style.width = '100%';
+
+      clearInterval(coffeeInterval);
+      coffeeInterval = setInterval(() => {
+        const rem = coffeeActiveUntil - Date.now();
+        if (rem <= 0) {
+          clearInterval(coffeeInterval);
+          gridContainer.classList.remove('coffee-aura');
+          coffeeStatusSpan.textContent = "VALMIS";
+          bar.style.width = '0%';
+          updateDifficultyUI();
+        } else {
+          coffeeStatusSpan.textContent = `${Math.ceil(rem / 1000)}s 3X`;
+          bar.style.width = `${(rem / 10000) * 100}%`;
+          updateDifficultyUI();
+        }
+      }, 100);
+
+      createHitFloater(window.innerWidth / 2, window.innerHeight / 2, "☕ WORKY-WORKY! 3X PUNKTID!", 'text-amber-400');
+      updateDifficultyUI();
+    });
+
+    btnHindre.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isPlaying) return;
+
+      // Hindre can only be used 1 time per game
+      if (hindreUsed) {
+        createHitFloater(btnHindre.getBoundingClientRect().left + 80, btnHindre.getBoundingClientRect().top, "JUBA KASUTATUD! ❌", 'text-red-300');
+        return;
+      }
+
+      hindreUsed = true;
+      hindreUsedCross.classList.remove('hidden');
+      btnHindre.classList.add('opacity-75', 'cursor-not-allowed');
+      hindreStatusSpan.textContent = "0/1";
+
+      const now = Date.now();
+      hindreActiveUntil = now + 10000;
+      audio.playHindreEntrance();
+
+      hindreHunter.classList.remove('hidden');
+
+      // Position Hindre initially at top right
+      let hindreX = window.innerWidth * 0.75;
+      let hindreY = window.innerHeight * 0.3;
+      hindreHunter.style.left = `${hindreX}px`;
+      hindreHunter.style.top = `${hindreY}px`;
+
+      const bar = document.getElementById('hindre-timer-bar');
+      bar.style.width = '100%';
+
+      clearInterval(hindreInterval);
+      hindreInterval = setInterval(() => {
+        const rem = hindreActiveUntil - Date.now();
+        if (rem <= 0) {
+          clearInterval(hindreInterval);
+          clearInterval(hindreAIInterval);
+          hindreHunter.classList.add('hidden');
+          bar.style.width = '0%';
+          updateDifficultyUI();
+        } else {
+          bar.style.width = `${(rem / 10000) * 100}%`;
+          updateDifficultyUI();
+        }
+      }, 100);
+
+      // AI Loop: Hindre moves toward active politician at 2x human speed
+      clearInterval(hindreAIInterval);
+      hindreAIInterval = setInterval(() => {
+        if (!isPlaying || Date.now() >= hindreActiveUntil) return;
+
+        if (activeActorIndex !== null) {
+          const targetMole = actors[activeActorIndex];
+          if (targetMole && targetMole.classList.contains('active')) {
+            const rect = targetMole.getBoundingClientRect();
+            const targetX = rect.left + rect.width / 2;
+            const targetY = rect.top + rect.height / 2;
+
+            const dx = targetX - hindreX;
+            const dy = targetY - hindreY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 45) {
+              hindreHunter.classList.add('whacking');
+              setTimeout(() => hindreHunter.classList.remove('whacking'), 180);
+              hitPolitician(targetMole, true);
+            } else {
+              const speed = Math.min(dist, 55);
+              hindreX += (dx / dist) * speed;
+              hindreY += (dy / dist) * speed;
+              hindreHunter.style.left = `${hindreX}px`;
+              hindreHunter.style.top = `${hindreY}px`;
+            }
+          }
+        }
+      }, 50);
+
+      createHitFloater(window.innerWidth / 2, window.innerHeight * 0.4, "🎙️ MADIS PÄÄSTAB PÄEVA!", 'text-red-300');
+      updateDifficultyUI();
+    });
+
+    function startGame() {
+      audio.init();
+      isPlaying = true;
+      score = 0;
+      timeLeft = 30;
+      combo = 1.0;
+      cigarCharges = 3;
+      lastCigarTimestamp = 0;
+      cigarActiveUntil = 0;
+      coffeeActiveUntil = 0;
+      hindreActiveUntil = 0;
+      hindreUsed = false;
+
+      scoreDisplay.textContent = '0';
+      timeDisplay.textContent = `${timeLeft}s`;
+      comboDisplay.textContent = '1.0x';
+      cigarChargesSpan.textContent = '3/3';
+      coffeeStatusSpan.textContent = 'VALMIS';
+      hindreStatusSpan.textContent = '1/1';
+      hindreUsedCross.classList.add('hidden');
+      btnHindre.classList.remove('opacity-75', 'cursor-not-allowed');
+
+      document.getElementById('cigar-timer-bar').style.width = '0%';
+      document.getElementById('coffee-timer-bar').style.width = '0%';
+      document.getElementById('hindre-timer-bar').style.width = '0%';
+
+      smokeOverlay.classList.add('hidden');
+      gridContainer.classList.remove('coffee-aura');
+      hindreHunter.classList.add('hidden');
+
+      modal.classList.add('hidden');
+      cancerModal.classList.add('hidden');
+
+      clearTimeout(spawnTimeout);
+      clearTimeout(hideMoleTimeout);
+      clearInterval(cigarInterval);
+      clearInterval(coffeeInterval);
+      clearInterval(hindreInterval);
+      clearInterval(hindreAIInterval);
+
+      actors.forEach(m => m.classList.remove('active', 'hit'));
+      quotes.forEach(q => q.classList.add('hidden'));
+
+      updateDifficultyUI();
+
+      gameInterval = setInterval(() => {
+        timeLeft--;
+        timeDisplay.textContent = `${timeLeft}s`;
+
+        if (timeLeft <= 5) {
+          timeDisplay.classList.add('animate-ping');
+        } else {
+          timeDisplay.classList.remove('animate-ping');
+        }
+
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+
+      popMole();
+    }
+
+    function endGame() {
+      isPlaying = false;
+      clearInterval(gameInterval);
+      clearTimeout(spawnTimeout);
+      clearTimeout(hideMoleTimeout);
+      clearInterval(cigarInterval);
+      clearInterval(coffeeInterval);
+      clearInterval(hindreInterval);
+      clearInterval(hindreAIInterval);
+
+      hindreHunter.classList.add('hidden');
+      smokeOverlay.classList.add('hidden');
+      gridContainer.classList.remove('coffee-aura');
+
+      actors.forEach(m => m.classList.remove('active', 'hit'));
+      quotes.forEach(q => q.classList.add('hidden'));
+
+      audio.playEnd();
+
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('whack_politician_bonnier_highscore', highScore.toString());
+        highScoreDisplay.textContent = highScore;
+      }
+
+      // Updated Bonnier birthday ratings ladder
+      let rating = "Praktikant 📝";
+      if (score >= 2000) rating = "Preili Bonnier! 🏆✨";
+      else if (score >= 1600) rating = "Peatoimetaja 👑";
+      else if (score >= 1200) rating = "Esikaanelõvi 🦁";
+      else if (score >= 800) rating = "Püstolreporter 🎙️";
+      else if (score >= 400) rating = "Laisk leheneeger 🗞️";
+      else rating = "Praktikant 📝";
+
+      modalTitle.textContent = "AEG SAI LÄBI!";
+      modalDesc.textContent = "Eetri-aeg sai otsa! Vaata oma tulemust ja taset:";
+      finalScore.textContent = score;
+      finalRating.textContent = rating;
+      modalStats.classList.remove('hidden');
+      startBtn.textContent = "MÄNGI UUESTI! 🔄";
+      modal.classList.remove('hidden');
+    }
+
+    // Toggle Audio
+    soundToggleBtn.addEventListener('click', () => {
+      audio.init();
+      const enabled = audio.toggle();
+      if (!enabled) {
+        soundStatus.textContent = 'HELI: VÄLJAS';
+        soundIcon.textContent = '🔇';
+      } else {
+        soundStatus.textContent = 'HELI: SEES';
+        soundIcon.textContent = '🔊';
+      }
+    });
+
+    startBtn.addEventListener('click', () => {
+      startGame();
+    });
+  </script>
+</body>
+</html>
